@@ -8,10 +8,6 @@
       "model": "Income",
       "namespace": "public"
     },
-    "inventoryMovement": {
-      "model": "InventoryMovement",
-      "namespace": "public"
-    },
     "invoice": {
       "model": "Invoice",
       "namespace": "public"
@@ -33,27 +29,6 @@
     "namespaces": {
       "public": {
         "enum": {
-          "InventoryMovementType": {
-            "codecId": "pg/text@1",
-            "members": [
-              {
-                "name": "INCOME",
-                "value": "INCOME"
-              },
-              {
-                "name": "SALE",
-                "value": "SALE"
-              },
-              {
-                "name": "SALE_CANCELLATION",
-                "value": "SALE_CANCELLATION"
-              },
-              {
-                "name": "ADJUSTMENT",
-                "value": "ADJUSTMENT"
-              }
-            ]
-          },
           "InvoiceStatus": {
             "codecId": "pg/text@1",
             "members": [
@@ -174,159 +149,6 @@
               "table": "income"
             }
           },
-          "InventoryMovement": {
-            "fields": {
-              "dateTime": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "kind": "scalar"
-                }
-              },
-              "id": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "invoiceId": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "productId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "quantity": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "referenceId": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "referenceType": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "type": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                },
-                "valueSet": {
-                  "entityKind": "enum",
-                  "entityName": "InventoryMovementType",
-                  "namespaceId": "public",
-                  "plane": "domain"
-                }
-              },
-              "userId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              }
-            },
-            "relations": {
-              "invoice": {
-                "cardinality": "N:1",
-                "on": {
-                  "localFields": [
-                    "invoiceId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Invoice",
-                  "namespace": "public"
-                }
-              },
-              "product": {
-                "cardinality": "N:1",
-                "on": {
-                  "localFields": [
-                    "productId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Product",
-                  "namespace": "public"
-                }
-              },
-              "user": {
-                "cardinality": "N:1",
-                "on": {
-                  "localFields": [
-                    "userId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "User",
-                  "namespace": "public"
-                }
-              }
-            },
-            "storage": {
-              "fields": {
-                "dateTime": {
-                  "column": "dateTime"
-                },
-                "id": {
-                  "column": "id"
-                },
-                "invoiceId": {
-                  "column": "invoiceId"
-                },
-                "productId": {
-                  "column": "productId"
-                },
-                "quantity": {
-                  "column": "quantity"
-                },
-                "referenceId": {
-                  "column": "referenceId"
-                },
-                "referenceType": {
-                  "column": "referenceType"
-                },
-                "type": {
-                  "column": "type"
-                },
-                "userId": {
-                  "column": "userId"
-                }
-              },
-              "namespaceId": "public",
-              "table": "inventoryMovement"
-            }
-          },
           "Invoice": {
             "fields": {
               "createdAt": {
@@ -370,24 +192,24 @@
                   "plane": "domain"
                 }
               },
-              "subtotal": {
+              "subtotalCents": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/numeric@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
-              "total": {
+              "totalCents": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/numeric@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
-              "totalDiscount": {
+              "totalDiscountCents": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/numeric@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -419,21 +241,6 @@
                 },
                 "to": {
                   "model": "InvoiceDetail",
-                  "namespace": "public"
-                }
-              },
-              "inventoryMovements": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "invoiceId"
-                  ]
-                },
-                "to": {
-                  "model": "InventoryMovement",
                   "namespace": "public"
                 }
               },
@@ -470,14 +277,14 @@
                 "status": {
                   "column": "status"
                 },
-                "subtotal": {
-                  "column": "subtotal"
+                "subtotalCents": {
+                  "column": "subtotalCents"
                 },
-                "total": {
-                  "column": "total"
+                "totalCents": {
+                  "column": "totalCents"
                 },
-                "totalDiscount": {
-                  "column": "totalDiscount"
+                "totalDiscountCents": {
+                  "column": "totalDiscountCents"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
@@ -492,17 +299,17 @@
           },
           "InvoiceDetail": {
             "fields": {
-              "costPrice": {
+              "costPriceCents": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/numeric@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
-              "discount": {
+              "discountCents": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/numeric@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -527,6 +334,13 @@
                   "kind": "scalar"
                 }
               },
+              "productName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "quantity": {
                 "nullable": false,
                 "type": {
@@ -534,17 +348,17 @@
                   "kind": "scalar"
                 }
               },
-              "salePrice": {
+              "salePriceCents": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/numeric@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
-              "subtotal": {
+              "subtotalCents": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/numeric@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               }
@@ -583,11 +397,11 @@
             },
             "storage": {
               "fields": {
-                "costPrice": {
-                  "column": "costPrice"
+                "costPriceCents": {
+                  "column": "costPriceCents"
                 },
-                "discount": {
-                  "column": "discount"
+                "discountCents": {
+                  "column": "discountCents"
                 },
                 "id": {
                   "column": "id"
@@ -598,14 +412,17 @@
                 "productId": {
                   "column": "productId"
                 },
+                "productName": {
+                  "column": "productName"
+                },
                 "quantity": {
                   "column": "quantity"
                 },
-                "salePrice": {
-                  "column": "salePrice"
+                "salePriceCents": {
+                  "column": "salePriceCents"
                 },
-                "subtotal": {
-                  "column": "subtotal"
+                "subtotalCents": {
+                  "column": "subtotalCents"
                 }
               },
               "namespaceId": "public",
@@ -628,10 +445,10 @@
                   "kind": "scalar"
                 }
               },
-              "costPrice": {
+              "costPriceCents": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/numeric@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -663,10 +480,10 @@
                   "kind": "scalar"
                 }
               },
-              "salePrice": {
+              "salePriceCents": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/numeric@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -701,21 +518,6 @@
                   "namespace": "public"
                 }
               },
-              "inventoryMovements": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "productId"
-                  ]
-                },
-                "to": {
-                  "model": "InventoryMovement",
-                  "namespace": "public"
-                }
-              },
               "invoiceDetails": {
                 "cardinality": "1:N",
                 "on": {
@@ -740,8 +542,8 @@
                 "code": {
                   "column": "code"
                 },
-                "costPrice": {
-                  "column": "costPrice"
+                "costPriceCents": {
+                  "column": "costPriceCents"
                 },
                 "createdAt": {
                   "column": "createdAt"
@@ -755,8 +557,8 @@
                 "name": {
                   "column": "name"
                 },
-                "salePrice": {
-                  "column": "salePrice"
+                "salePriceCents": {
+                  "column": "salePriceCents"
                 },
                 "stock": {
                   "column": "stock"
@@ -840,21 +642,6 @@
                 },
                 "to": {
                   "model": "Income",
-                  "namespace": "public"
-                }
-              },
-              "inventoryMovements": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "userId"
-                  ]
-                },
-                "to": {
-                  "model": "InventoryMovement",
                   "namespace": "public"
                 }
               },
@@ -1006,158 +793,6 @@
               },
               "uniques": []
             },
-            "inventoryMovement": {
-              "checks": [
-                {
-                  "expression": "\"type\" IN ('INCOME', 'SALE', 'SALE_CANCELLATION', 'ADJUSTMENT')",
-                  "name": "inventoryMovement_type_check_3e9c6f5b",
-                  "prefix": "inventoryMovement_type_check"
-                }
-              ],
-              "columns": {
-                "dateTime": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nativeType": "timestamptz",
-                  "nullable": false
-                },
-                "id": {
-                  "codecId": "pg/int4@1",
-                  "default": {
-                    "expression": "autoincrement()",
-                    "kind": "function"
-                  },
-                  "nativeType": "int4",
-                  "nullable": false
-                },
-                "invoiceId": {
-                  "codecId": "pg/int4@1",
-                  "nativeType": "int4",
-                  "nullable": true
-                },
-                "productId": {
-                  "codecId": "pg/int4@1",
-                  "nativeType": "int4",
-                  "nullable": false
-                },
-                "quantity": {
-                  "codecId": "pg/int4@1",
-                  "nativeType": "int4",
-                  "nullable": false
-                },
-                "referenceId": {
-                  "codecId": "pg/int4@1",
-                  "nativeType": "int4",
-                  "nullable": true
-                },
-                "referenceType": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
-                },
-                "type": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": false,
-                  "valueSet": {
-                    "entityKind": "valueSet",
-                    "entityName": "InventoryMovementType",
-                    "namespaceId": "public",
-                    "plane": "storage"
-                  }
-                },
-                "userId": {
-                  "codecId": "pg/int4@1",
-                  "nativeType": "int4",
-                  "nullable": false
-                }
-              },
-              "foreignKeys": [
-                {
-                  "source": {
-                    "columns": [
-                      "productId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "inventoryMovement"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "product"
-                  }
-                },
-                {
-                  "source": {
-                    "columns": [
-                      "userId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "inventoryMovement"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "user"
-                  }
-                },
-                {
-                  "source": {
-                    "columns": [
-                      "invoiceId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "inventoryMovement"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "invoice"
-                  }
-                }
-              ],
-              "indexes": [
-                {
-                  "columns": [
-                    "invoiceId"
-                  ],
-                  "name": "inventoryMovement_invoiceId_idx_d5c4f70e",
-                  "prefix": "inventoryMovement_invoiceId_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "productId"
-                  ],
-                  "name": "inventoryMovement_productId_idx_5858600a",
-                  "prefix": "inventoryMovement_productId_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "userId"
-                  ],
-                  "name": "inventoryMovement_userId_idx_a489d58a",
-                  "prefix": "inventoryMovement_userId_idx",
-                  "unique": false
-                }
-              ],
-              "primaryKey": {
-                "columns": [
-                  "id"
-                ]
-              },
-              "uniques": []
-            },
             "invoice": {
               "checks": [
                 {
@@ -1214,23 +849,23 @@
                     "plane": "storage"
                   }
                 },
-                "subtotal": {
-                  "codecId": "pg/numeric@1",
-                  "nativeType": "numeric",
+                "subtotalCents": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
                   "nullable": false
                 },
-                "total": {
-                  "codecId": "pg/numeric@1",
-                  "nativeType": "numeric",
+                "totalCents": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
                   "nullable": false
                 },
-                "totalDiscount": {
-                  "codecId": "pg/numeric@1",
+                "totalDiscountCents": {
+                  "codecId": "pg/int4@1",
                   "default": {
                     "kind": "literal",
                     "value": 0
                   },
-                  "nativeType": "numeric",
+                  "nativeType": "int4",
                   "nullable": false
                 },
                 "updatedAt": {
@@ -1287,18 +922,18 @@
             },
             "invoiceDetail": {
               "columns": {
-                "costPrice": {
-                  "codecId": "pg/numeric@1",
-                  "nativeType": "numeric",
+                "costPriceCents": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
                   "nullable": false
                 },
-                "discount": {
-                  "codecId": "pg/numeric@1",
+                "discountCents": {
+                  "codecId": "pg/int4@1",
                   "default": {
                     "kind": "literal",
                     "value": 0
                   },
-                  "nativeType": "numeric",
+                  "nativeType": "int4",
                   "nullable": false
                 },
                 "id": {
@@ -1320,19 +955,24 @@
                   "nativeType": "int4",
                   "nullable": false
                 },
+                "productName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
                 "quantity": {
                   "codecId": "pg/int4@1",
                   "nativeType": "int4",
                   "nullable": false
                 },
-                "salePrice": {
-                  "codecId": "pg/numeric@1",
-                  "nativeType": "numeric",
+                "salePriceCents": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
                   "nullable": false
                 },
-                "subtotal": {
-                  "codecId": "pg/numeric@1",
-                  "nativeType": "numeric",
+                "subtotalCents": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
                   "nullable": false
                 }
               },
@@ -1411,9 +1051,9 @@
                   "nativeType": "text",
                   "nullable": false
                 },
-                "costPrice": {
-                  "codecId": "pg/numeric@1",
-                  "nativeType": "numeric",
+                "costPriceCents": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
                   "nullable": false
                 },
                 "createdAt": {
@@ -1444,9 +1084,9 @@
                   "nativeType": "text",
                   "nullable": false
                 },
-                "salePrice": {
-                  "codecId": "pg/numeric@1",
-                  "nativeType": "numeric",
+                "salePriceCents": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
                   "nullable": false
                 },
                 "stock": {
@@ -1557,15 +1197,6 @@
             }
           },
           "valueSet": {
-            "InventoryMovementType": {
-              "kind": "valueSet",
-              "values": [
-                "INCOME",
-                "SALE",
-                "SALE_CANCELLATION",
-                "ADJUSTMENT"
-              ]
-            },
             "InvoiceStatus": {
               "kind": "valueSet",
               "values": [
@@ -1586,7 +1217,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "f0b4166edfb6134f7e426931f13b5649504568f30d561e211e64701b67fc2a51"
+    "storageHash": "d68d9d9577af305d498c7d6d808112d8485bd8175d6c7e3c6df922d813493dcf"
   },
   "execution": {
     "executionHash": "cd251809317370029373ec151f2e5480ad8ca99672396b1cd56ea4958262b9bb",

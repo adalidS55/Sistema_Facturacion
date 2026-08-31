@@ -10,94 +10,70 @@ enum InvoiceStatus {
   CANCELLED
 }
 
-enum InventoryMovementType {
-  INCOME
-  SALE
-  SALE_CANCELLATION
-  ADJUSTMENT
-}
-
 model User {
-  id                Int                   @id @default(autoincrement())
-  name              String
-  passwordHash      String
-  role              UserRole              @default(USER)
-  active            Boolean               @default(true)
-  createdAt         TimestamptzString     @default(now())
-  updatedAt         temporal.updatedAtString()
+  id          Int               @id @default(autoincrement())
+  name        String
+  passwordHash String
+  role        UserRole          @default(USER)
+  active      Boolean           @default(true)
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
 
-  incomes           Income[]
-  invoices          Invoice[]
-  inventoryMovements InventoryMovement[]
+  incomes     Income[]
+  invoices    Invoice[]
 }
 
 model Product {
-  id                 Int                   @id @default(autoincrement())
-  code               String                @unique
-  name               String
-  stock              Int                   @default(0)
-  salePrice          Decimal
-  costPrice          Decimal
-  entryDate          TimestamptzString
-  active             Boolean               @default(true)
-  createdAt          TimestamptzString     @default(now())
-  updatedAt          temporal.updatedAtString()
+  id             Int               @id @default(autoincrement())
+  code           String            @unique
+  name           String
+  stock          Int               @default(0)
+  salePriceCents Int
+  costPriceCents Int
+  entryDate      TimestamptzString
+  active         Boolean           @default(true)
+  createdAt      TimestamptzString @default(now())
+  updatedAt      temporal.updatedAtString()
 
-  incomes            Income[]
-  invoiceDetails     InvoiceDetail[]
-  inventoryMovements InventoryMovement[]
+  incomes        Income[]
+  invoiceDetails InvoiceDetail[]
 }
 
 model Income {
-  id          Int       @id @default(autoincrement())
-  product     Product   @relation(fields: [productId], references: [id])
-  productId   Int
-  quantity    Int
-  dateTime    TimestamptzString @default(now())
-  user        User      @relation(fields: [userId], references: [id])
-  userId      Int
+  id        Int               @id @default(autoincrement())
+  product   Product           @relation(fields: [productId], references: [id])
+  productId Int
+  quantity  Int
+  dateTime  TimestamptzString @default(now())
+  user      User              @relation(fields: [userId], references: [id])
+  userId    Int
 }
 
 model Invoice {
-  id              Int             @id @default(autoincrement())
-  number          String          @unique
-  dateTime        TimestamptzString @default(now())
-  subtotal        Decimal
-  totalDiscount   Decimal         @default(0)
-  total           Decimal
-  status          InvoiceStatus   @default(ACTIVE)
-  user            User            @relation(fields: [userId], references: [id])
-  userId          Int
-  details         InvoiceDetail[]
-  inventoryMovements InventoryMovement[]
-  createdAt       TimestamptzString @default(now())
-  updatedAt       temporal.updatedAtString()
+  id                 Int               @id @default(autoincrement())
+  number             String            @unique
+  dateTime           TimestamptzString @default(now())
+  subtotalCents      Int
+  totalDiscountCents Int               @default(0)
+  totalCents          Int
+  status             InvoiceStatus     @default(ACTIVE)
+  user               User              @relation(fields: [userId], references: [id])
+  userId             Int
+  details            InvoiceDetail[]
+  createdAt          TimestamptzString @default(now())
+  updatedAt          temporal.updatedAtString()
 }
 
 model InvoiceDetail {
-  id          Int       @id @default(autoincrement())
-  invoice     Invoice   @relation(fields: [invoiceId], references: [id])
-  invoiceId   Int
-  product     Product   @relation(fields: [productId], references: [id])
-  productId   Int
-  quantity    Int
-  salePrice   Decimal
-  costPrice   Decimal
-  discount    Decimal   @default(0)
-  subtotal    Decimal
-}
-
-model InventoryMovement {
-  id              Int                    @id @default(autoincrement())
-  product         Product                @relation(fields: [productId], references: [id])
-  productId       Int
-  type            InventoryMovementType
-  quantity        Int
-  referenceType   String?
-  referenceId     Int?
-  dateTime        TimestamptzString      @default(now())
-  user            User                   @relation(fields: [userId], references: [id])
-  userId          Int
-  invoice         Invoice?               @relation(fields: [invoiceId], references: [id])
-  invoiceId       Int?
+  id             Int               @id @default(autoincrement())
+  invoice        Invoice           @relation(fields: [invoiceId], references: [id])
+  invoiceId      Int
+  product        Product           @relation(fields: [productId], references: [id])
+  productId      Int
+  productName    String
+  quantity       Int
+  salePriceCents Int
+  costPriceCents Int
+  discountCents  Int               @default(0)
+  subtotalCents  Int
 }
