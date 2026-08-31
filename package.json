@@ -1,0 +1,22 @@
+{
+  "name": "sistema-facturacion",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sistema de facturación e inventario",
+  "scripts": {
+    "postinstall": "prisma skills sync || exit 0",
+    "contract:emit": "prisma contract emit"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@prisma/cli-engine": "^0.2.3",
+    "@types/node": "^26.4.0",
+    "prisma": "^8.0.0-rc.10"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.10.0",
+    "@prisma/orm-postgres": "^8.0.0-rc.8",
+    "dotenv": "^17.4.2"
+  }
+}
