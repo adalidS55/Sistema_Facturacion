@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-
-import { createProduct, getProductByCode, getProductById, getProducts, } from "./products.service.js";
+import { createProduct, getProductByCode, getProductById, getProducts, updateProduct, deactivateProduct, activateProduct } from "./products.service.js";
+import { validateProduct } from "./products.validation.js";
 
 export async function listProducts(
   _req: Request,
@@ -58,73 +58,19 @@ export async function createProductHandler(
   res: Response,
 ) {
   try {
-    const { code, name, stock, salePriceCents, costPriceCents, entryDate, active, } = req.body;
-    if (
-      typeof code !== "string" ||
-      code.trim().length === 0
-    ) {
+    const validation = validateProduct(req.body);
+
+    if (!validation.success) {
       return res.status(400).json({
         status: "error",
-        message: "El código del producto es obligatorio",
-      });
-    }
-    if (
-      typeof name !== "string" ||
-      name.trim().length === 0
-    ) {
-      return res.status(400).json({
-        status: "error",
-        message: "El nombre del producto es obligatorio",
-      });
-    }
-    if (
-      !Number.isInteger(stock) ||
-      stock < 0
-    ) {
-      return res.status(400).json({
-        status: "error",
-        message: "El stock debe ser un número entero mayor o igual a 0",
-      });
-    }
-    if (
-      !Number.isInteger(salePriceCents) ||
-      salePriceCents < 0
-    ) {
-      return res.status(400).json({
-        status: "error",
-        message: "El precio de venta debe ser un entero mayor o igual a 0",
-      });
-    }
-    if (
-      !Number.isInteger(costPriceCents) ||
-      costPriceCents < 0
-    ) {
-      return res.status(400).json({
-        status: "error",
-        message: "El precio de costo debe ser un entero mayor o igual a 0",
-      });
-    }
-    if (
-      typeof entryDate !== "string" ||
-      Number.isNaN(Date.parse(entryDate))
-    ) {
-      return res.status(400).json({
-        status: "error",
-        message: "La fecha de entrada no es válida",
-      });
-    }
-    if (
-      active !== undefined &&
-      typeof active !== "boolean"
-    ) {
-      return res.status(400).json({
-        status: "error",
-        message: "El campo active debe ser booleano",
+        message: validation.message,
       });
     }
 
-    const normalizedCode = code.trim();
-    const existingProduct = await getProductByCode(normalizedCode);
+    const data = validation.data;
+
+    const existingProduct = await getProductByCode(data.code);
+
     if (existingProduct) {
       return res.status(409).json({
         status: "error",
@@ -132,24 +78,195 @@ export async function createProductHandler(
       });
     }
 
-    const product = await createProduct({
-      code: normalizedCode,
-      name: name.trim(),
-      stock,
-      salePriceCents,
-      costPriceCents,
-      entryDate,
-      active,
-    });
+    const product = await createProduct(data);
+
     return res.status(201).json({
       status: "ok",
       product,
     });
   } catch (error) {
     console.error("Error al crear producto:", error);
+
     return res.status(500).json({
       status: "error",
       message: "No se pudo crear el producto",
+    });
+  }
+}
+
+export async function updateProductHandler(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({
+        status: "error",
+        message: "El ID del producto no es válido",
+      });
+    }
+
+    const existingProduct = await getProductById(id);
+
+    if (!existingProduct) {
+      return res.status(404).json({
+        status: "error",
+        message: "Producto no encontrado",
+      });
+    }
+
+    const validation = validateProduct(req.body);
+
+    if (!validation.success) {
+      return res.status(400).json({
+        status: "error",
+        message: validation.message,
+      });
+    }
+
+    const data = validation.data;
+
+    const productWithSameCode = await getProductByCode(data.code);
+
+    if (
+      productWithSameCode &&
+      productWithSameCode.id !== id
+    ) {
+      return res.status(409).json({
+        status: "error",
+        message: "Ya existe otro producto con ese código",
+      });
+    }
+
+    const product = await updateProduct(id, data);
+
+    if (!product) {
+      return res.status(404).json({
+        status: "error",
+        message: "Producto no encontrado",
+      });
+    }
+
+    return res.json({
+      status: "ok",
+      product,
+    });
+  } catch (error) {
+    console.error("Error al actualizar producto:", error);
+
+    return res.status(500).json({
+      status: "error",
+      message: "No se pudo actualizar el producto",
+    });
+  }
+}
+
+export async function deleteProductHandler(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({
+        status: "error",
+        message: "El ID del producto no es válido",
+      });
+    }
+
+    const existingProduct = await getProductById(id);
+
+    if (!existingProduct) {
+      return res.status(404).json({
+        status: "error",
+        message: "Producto no encontrado",
+      });
+    }
+
+    if (!existingProduct.active) {
+      return res.status(409).json({
+        status: "error",
+        message: "El producto ya está desactivado",
+      });
+    }
+
+    const product = await deactivateProduct(id);
+
+    if (!product) {
+      return res.status(404).json({
+        status: "error",
+        message: "Producto no encontrado",
+      });
+    }
+
+    return res.json({
+      status: "ok",
+      message: "Producto desactivado correctamente",
+      product,
+    });
+  } catch (error) {
+    console.error("Error al desactivar producto:", error);
+
+    return res.status(500).json({
+      status: "error",
+      message: "No se pudo desactivar el producto",
+    });
+  }
+}
+
+export async function activateProductHandler(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({
+        status: "error",
+        message: "El ID del producto no es válido",
+      });
+    }
+
+    const existingProduct = await getProductById(id);
+
+    if (!existingProduct) {
+      return res.status(404).json({
+        status: "error",
+        message: "Producto no encontrado",
+      });
+    }
+
+    if (existingProduct.active) {
+      return res.status(409).json({
+        status: "error",
+        message: "El producto ya está activo",
+      });
+    }
+
+    const product = await activateProduct(id);
+
+    if (!product) {
+      return res.status(404).json({
+        status: "error",
+        message: "Producto no encontrado",
+      });
+    }
+
+    return res.json({
+      status: "ok",
+      message: "Producto reactivado correctamente",
+      product,
+    });
+  } catch (error) {
+    console.error("Error al reactivar producto:", error);
+
+    return res.status(500).json({
+      status: "error",
+      message: "No se pudo reactivar el producto",
     });
   }
 }
