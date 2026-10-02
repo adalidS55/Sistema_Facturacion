@@ -6,10 +6,6 @@ node_modules/
 .env.*
 !.env.example
 
-# Prisma
-prisma/*.db
-prisma/*.db-journal
-
 # Builds
 dist/
 build/
@@ -25,3 +21,9 @@ Thumbs.db
 # Editor
 .vscode/*
 !.vscode/extensions.json
+
+# Skills generadas por herramientas de Prisma/IA
+.agents/
+.claude/
+.cursor/
+.devin/
