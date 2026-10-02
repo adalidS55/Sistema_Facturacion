@@ -5,13 +5,13 @@
 El contrato actual está definido en:
 
 ```text
-src/prisma/contract.prisma
+apps/api/src/prisma/contract.prisma
 ```
 
-La migración inicial versionada se encuentra en:
+La migración inicial versionada está en:
 
 ```text
-migrations/app/20260831T0659_initial_schema
+apps/api/migrations/app/20260831T0659_initial_schema
 ```
 
 ## Enumeraciones
@@ -69,8 +69,6 @@ Relaciones: un producto puede aparecer en múltiples `Income` y `InvoiceDetail`.
 | dateTime | TimestamptzString, default now |
 | userId | FK a User |
 
-Representa una entrada de inventario asociada a un producto y a un usuario.
-
 ### Invoice
 
 | Campo | Tipo / regla |
@@ -85,8 +83,6 @@ Representa una entrada de inventario asociada a un producto y a un usuario.
 | userId | FK a User |
 | createdAt | TimestamptzString |
 | updatedAt | timestamp actualizado automáticamente |
-
-Una factura pertenece a un usuario y tiene múltiples detalles.
 
 ### InvoiceDetail
 
@@ -124,15 +120,8 @@ User 1 ---- N Invoice
 
 ## Convención monetaria
 
-Los valores monetarios se almacenan como enteros en centavos:
-
-```text
-15000 -> 150.00
-9000  ->  90.00
-```
-
-Esto evita depender de números de punto flotante para importes monetarios.
+Los valores monetarios se almacenan como enteros en centavos para evitar depender de punto flotante en importes monetarios.
 
 ## Estado de implementación
 
-El esquema incluye todos los modelos anteriores, pero actualmente solo `Product` tiene un módulo HTTP implementado. La existencia de un modelo en el contrato no implica que su API ya exista.
+Todos los modelos anteriores existen en el contrato. Actualmente solo `Product` tiene módulo HTTP implementado.

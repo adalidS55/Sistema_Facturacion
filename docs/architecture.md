@@ -1,10 +1,36 @@
 # Arquitectura
 
-## Objetivo
+## Organización del repositorio
 
-El sistema está pensado para cubrir productos, inventario, facturación y usuarios mediante una API TypeScript y una interfaz web que se incorporará progresivamente.
+El proyecto se organiza como un workspace con aplicaciones separadas:
 
-## Arquitectura actual
+```text
+apps/
+├── api/     # Backend
+└── web/     # Frontend, pendiente de crear
+```
+
+Esto mantiene frontend y backend en el mismo repositorio, pero evita mezclar código, configuración y dependencias propias de cada aplicación.
+
+## Backend
+
+La API activa está completamente dentro de `apps/api/`.
+
+```text
+apps/api/
+├── migrations/
+├── src/
+│   ├── app.ts
+│   ├── server.ts
+│   ├── modules/
+│   │   └── products/
+│   └── prisma/
+├── package.json
+├── prisma.config.ts
+└── tsconfig.json
+```
+
+## Flujo actual
 
 ```text
 Cliente / Postman
@@ -24,94 +50,65 @@ Controllers
 Services
        |
        v
-Prisma ORM (Collection API)
+Prisma Collection API
        |
        v
 PostgreSQL / Supabase
 ```
 
-## Backend
-
-La aplicación Express se configura en `src/app.ts` y el servidor se inicia desde `src/server.ts`.
-
-Actualmente se registran:
-
-- `/api/products`
-- `/api/health`
-- `/api/health/database`
-
-### Organización por módulo
-
-El módulo `products` establece el patrón actual:
-
-```text
-products.routes.ts
-       |
-       v
-products.controller.ts
-       |
-       +----> products.validation.ts
-       |
-       v
-products.service.ts
-       |
-       v
-src/prisma/db.ts
-```
-
 ### Responsabilidades
 
-**Routes:** definen método HTTP y URL, y delegan en un handler.
+**Routes:** método HTTP y URL.
 
-**Controllers:** interpretan la petición, validan parámetros, transforman errores conocidos en respuestas HTTP y coordinan validación y servicios.
+**Controllers:** petición/respuesta HTTP, parámetros, errores conocidos y coordinación.
 
-**Validation:** valida y normaliza el body antes de acceder a la base de datos.
+**Validation:** valida y normaliza datos de entrada.
 
-**Services:** contienen el acceso a datos mediante Prisma.
+**Services:** acceso a datos y operaciones de persistencia.
+
+**Prisma:** contrato, tipos generados y conexión a PostgreSQL.
 
 ## Prisma
 
-El proyecto usa Prisma 8 RC con `@prisma/orm-postgres` y un contrato definido en `src/prisma/contract.prisma`.
+El contrato vive en:
 
-La conexión se crea en `src/prisma/db.ts` usando:
-
-```ts
-db.orm.public.Model
+```text
+apps/api/src/prisma/contract.prisma
 ```
 
-El estilo de consultas comprobado en el proyecto es basado en Collections:
+Los artefactos generados son:
 
-```ts
-db.orm.public.Product.all();
-
-db.orm.public.Product
-  .where({ id })
-  .first();
-
-db.orm.public.Product.create(data);
-
-db.orm.public.Product
-  .where({ id })
-  .update(data);
+```text
+apps/api/src/prisma/contract.json
+apps/api/src/prisma/contract.d.ts
 ```
 
-No se debe asumir que están disponibles métodos del Prisma Client tradicional como `findUnique()` o `findMany()`.
+Las migraciones viven junto al backend:
 
-## Configuración
+```text
+apps/api/migrations/
+```
 
-`prisma.config.ts` carga `DATABASE_URL` y apunta a `src/prisma/contract.prisma`.
-
-Los artefactos generados del contrato son:
-
-- `src/prisma/contract.json`
-- `src/prisma/contract.d.ts`
+El proyecto usa la Collection API de Prisma 8 RC. No se deben asumir métodos del Prisma Client tradicional.
 
 ## Frontend
 
-El frontend todavía no está implementado en el estado actual de `main`.
+`apps/web` se creará como aplicación React + Tailwind. Tendrá su propio `package.json` y código fuente, pero compartirá el repositorio y la documentación con la API.
 
-La estrategia prevista es desarrollar por funcionalidades verticales: backend, interfaz, integración y pruebas de cada módulo antes de pasar al siguiente.
+## Workspaces
 
-## Estructura pendiente de aclarar
+El `package.json` raíz declara:
 
-Existe `apps/api/package.json`, pero los scripts raíz ejecutan `src/server.ts`. Hasta que se decida una migración a monorepo o una reorganización, `src/` debe considerarse la implementación activa.
+```json
+{
+  "workspaces": ["apps/*"]
+}
+```
+
+La raíz sirve para coordinar aplicaciones. Las dependencias específicas del backend están declaradas en `apps/api/package.json`.
+
+## Archivos generados por herramientas
+
+Las carpetas `.agents/`, `.claude/`, `.cursor/` y `.devin/` generadas por `prisma skills sync` no son parte de la aplicación y se excluyen mediante `.gitignore`.
+
+No se ejecuta `prisma skills sync` automáticamente durante `npm install`.

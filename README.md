@@ -1,12 +1,31 @@
 # Sistema de Facturación e Inventario
 
-Backend en desarrollo para gestionar productos, inventario, facturación y usuarios.
+Sistema en desarrollo para gestionar productos, inventario, facturación y usuarios.
+
+## Estructura
+
+El repositorio usa npm workspaces para mantener frontend y backend separados dentro del mismo proyecto.
+
+```text
+Sistema_Facturacion/
+├── apps/
+│   ├── api/                 # Backend Express + TypeScript
+│   │   ├── src/
+│   │   ├── migrations/
+│   │   ├── prisma.config.ts
+│   │   ├── tsconfig.json
+│   │   └── package.json
+│   └── web/                 # Frontend (se creará en la siguiente etapa)
+├── docs/
+├── package.json
+└── README.md
+```
 
 ## Estado actual
 
-El módulo de **productos** está implementado y expone operaciones para listar productos activos, consultar por ID, crear, actualizar, desactivar y reactivar productos.
+El módulo de productos está implementado. Permite listar productos activos, consultar por ID, crear, actualizar, desactivar y reactivar.
 
-Los modelos de base de datos definidos actualmente son:
+Modelos definidos en la base de datos:
 
 - User
 - Product
@@ -14,84 +33,61 @@ Los modelos de base de datos definidos actualmente son:
 - Invoice
 - InvoiceDetail
 
-Los módulos de entradas de inventario, facturación y usuarios todavía no tienen API implementada.
+Income, Invoice, InvoiceDetail y User todavía no tienen módulos HTTP implementados.
 
-## Tecnologías actuales
+## Tecnologías del backend
 
 - Node.js
 - TypeScript
 - Express 5
-- Prisma 8 RC mediante `@prisma/orm-postgres`
+- Prisma 8 RC con `@prisma/orm-postgres`
 - PostgreSQL
-- Supabase como base de datos alojada
-- tsx para desarrollo
+- Supabase
+- tsx
 
-> Este proyecto usa la nueva API basada en contratos y Collections de Prisma 8 RC, no la API tradicional de Prisma Client.
+> El proyecto usa la API de Collections basada en contratos de Prisma 8 RC, no el Prisma Client tradicional.
 
-## Ejecutar en desarrollo
+## Instalación
 
-1. Instalar dependencias:
+Desde la raíz:
 
 ```bash
 npm install
 ```
 
-2. Configurar `DATABASE_URL` en el entorno local.
+Esto instala las dependencias de los workspaces y genera un nuevo `package-lock.json` compatible con la estructura actual.
 
-3. Emitir el contrato de Prisma cuando corresponda:
+## Variables de entorno
+
+Copia:
+
+```text
+apps/api/.env.example
+```
+
+como:
+
+```text
+apps/api/.env
+```
+
+y configura `DATABASE_URL`.
+
+Nunca se debe subir `.env` al repositorio.
+
+## Comandos desde la raíz
 
 ```bash
+npm run dev:api
+npm run build:api
+npm run start:api
 npm run contract:emit
 ```
 
-4. Iniciar la API:
-
-```bash
-npm run dev
-```
-
-Por defecto la API se inicia en:
+La API usa por defecto:
 
 ```text
 http://localhost:3000
-```
-
-## Scripts
-
-| Script | Uso |
-| --- | --- |
-| `npm run dev` | Ejecuta la API con `tsx watch` |
-| `npm run build` | Compila TypeScript |
-| `npm start` | Ejecuta `dist/server.js` |
-| `npm run contract:emit` | Genera los artefactos del contrato Prisma |
-
-## Estructura principal
-
-```text
-src/
-├── app.ts
-├── server.ts
-├── modules/
-│   └── products/
-│       ├── products.routes.ts
-│       ├── products.controller.ts
-│       ├── products.service.ts
-│       └── products.validation.ts
-└── prisma/
-    ├── contract.prisma
-    ├── contract.json
-    ├── contract.d.ts
-    └── db.ts
-
-migrations/
-└── app/
-    └── 20260831T0659_initial_schema/
-
-docs/
-├── architecture.md
-├── database.md
-├── api.md
-└── decisions.md
 ```
 
 ## Documentación
@@ -103,12 +99,9 @@ docs/
 
 ## Próximos objetivos
 
-1. Construir el frontend del módulo de productos.
-2. Implementar entradas de inventario y actualización atómica del stock.
-3. Implementar facturación y detalles de factura.
-4. Implementar usuarios y autenticación.
-5. Añadir pruebas automatizadas y preparar despliegue.
-
-## Estado del repositorio
-
-La implementación activa de la API se encuentra actualmente en `src/`. Existe un directorio `apps/api/` con un `package.json`, pero todavía no representa la estructura utilizada por los scripts principales. Su propósito deberá decidirse antes de reorganizar el proyecto.
+1. Crear `apps/web` con React y Tailwind.
+2. Integrar la UI de Products con la API real.
+3. Implementar entradas de inventario con actualización atómica de stock.
+4. Implementar facturación.
+5. Implementar usuarios y autenticación.
+6. Añadir pruebas automatizadas y despliegue.
