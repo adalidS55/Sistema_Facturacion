@@ -7,7 +7,7 @@ El proyecto se organiza como un workspace con aplicaciones separadas:
 ```text
 apps/
 ├── api/     # Backend
-└── web/     # Frontend, pendiente de crear
+└── web/     # Frontend React + TypeScript + Tailwind
 ```
 
 Esto mantiene frontend y backend en el mismo repositorio, pero evita mezclar código, configuración y dependencias propias de cada aplicación.
@@ -93,7 +93,11 @@ El proyecto usa la Collection API de Prisma 8 RC. No se deben asumir métodos de
 
 ## Frontend
 
-`apps/web` se creará como aplicación React + Tailwind. Tendrá su propio `package.json` y código fuente, pero compartirá el repositorio y la documentación con la API.
+`apps/web` es una aplicación React + TypeScript + Tailwind construida con Vite. Tiene su propio `package.json` y configuración de TypeScript. Comparte un único lockfile raíz con la API.
+
+Se organiza por funcionalidades: `src/app` compone la aplicación, `src/features/products` contiene el contrato y contendrá la UI y acceso HTTP del módulo, y `src/shared` contiene código reutilizable. Inventario, facturación y usuarios se añadirán como nuevas funcionalidades cuando se implementen.
+
+Consulta [Frontend](frontend.md) para configuración, límites del contrato y responsabilidades.
 
 ## Workspaces
 

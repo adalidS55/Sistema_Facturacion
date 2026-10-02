@@ -3,12 +3,19 @@
   "version": "1.0.0",
   "private": true,
   "description": "Sistema de facturación e inventario",
-  "workspaces": ["apps/*"],
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
     "dev:api": "npm run dev --workspace=@sistema-facturacion/api",
     "build:api": "npm run build --workspace=@sistema-facturacion/api",
     "start:api": "npm run start --workspace=@sistema-facturacion/api",
-    "contract:emit": "npm run contract:emit --workspace=@sistema-facturacion/api"
+    "contract:emit": "npm run contract:emit --workspace=@sistema-facturacion/api",
+    "dev:web": "npm run dev --workspace=@sistema-facturacion/web",
+    "build:web": "npm run build --workspace=@sistema-facturacion/web",
+    "lint:web": "npm run lint --workspace=@sistema-facturacion/web",
+    "typecheck:web": "npm run typecheck --workspace=@sistema-facturacion/web",
+    "preview:web": "npm run preview --workspace=@sistema-facturacion/web"
   },
   "license": "MIT"
 }

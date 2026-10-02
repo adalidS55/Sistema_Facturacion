@@ -71,6 +71,20 @@ Las carpetas generadas por `prisma skills sync` no son necesarias para ejecutar 
 
 Si una herramienta de desarrollo necesita esas skills, puede generarlas localmente sin convertirlas en parte del producto.
 
+## DEC-011 — Frontend por funcionalidades con Vite
+
+**Estado:** adoptada para la base de `apps/web`.
+
+React y TypeScript estricto, con Tailwind 4 mediante `@tailwindcss/vite`.
+`app` compone la aplicación, `features` agrupa cada módulo funcional y
+`shared` contiene utilidades y componentes comunes. La configuración de
+TypeScript del frontend es independiente de la API. Las dependencias se
+instalan desde la raíz y se conserva un único lockfile.
+
+El servidor de Vite redirige `/api` al backend durante desarrollo. El despliegue
+deberá configurar un proxy equivalente o una base pública con CORS. El proxy
+de desarrollo no se incluye en los archivos compilados.
+
 ## Pendientes de decisión
 
 - Estrategia de autenticación y autorización.
