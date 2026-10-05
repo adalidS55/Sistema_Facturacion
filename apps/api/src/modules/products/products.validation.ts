@@ -57,13 +57,11 @@ export function validateProduct(
   if (
     typeof data.stock !== "number" ||
     !Number.isFinite(data.stock) ||
-    data.stock < 0 ||
-    Math.round(data.stock * 100) !== data.stock * 100
+    !Number.isInteger(data.stock * 100)
   ) {
     return {
       success: false,
-      message:
-        "El stock debe ser un número mayor o igual a 0 con máximo 2 decimales",
+      message: "El stock debe ser un número con máximo 2 decimales",
     };
   }
 
