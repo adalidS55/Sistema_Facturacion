@@ -68,7 +68,7 @@ export async function updateProduct(
     .update({
       code: data.code,
       name: data.name,
-      stock: data.stock,
+      stock: data.stock.toFixed(2),
       salePriceCents: data.salePriceCents,
       costPriceCents: data.costPriceCents,
       entryDate: data.entryDate,
