@@ -1,22 +1,34 @@
 import { db } from "../../prisma/db.js";
 
+function normalizeProduct<T extends { stock: unknown }>(product: T) {
+  return {
+    ...product,
+    stock: Number(product.stock),
+  };
+}
+
 export async function getProducts() {
-  // return db.orm.public.Product.all();
-  return db.orm.public.Product
-  .where({ active: true })
-  .all();
+  const products = await db.orm.public.Product
+    .where({ active: true })
+    .all();
+
+  return products.map(normalizeProduct);
 }
 
 export async function getProductById(id: number) {
-  return db.orm.public.Product
+  const product = await db.orm.public.Product
     .where({ id })
     .first();
+
+  return product ? normalizeProduct(product) : null;
 }
 
 export async function getProductByCode(code: string) {
-  return db.orm.public.Product
+  const product = await db.orm.public.Product
     .where({ code })
     .first();
+
+  return product ? normalizeProduct(product) : null;
 }
 
 export async function createProduct(data: {
@@ -31,7 +43,7 @@ export async function createProduct(data: {
   return db.orm.public.Product.create({
     code: data.code,
     name: data.name,
-    stock: data.stock,
+    stock: data.stock.toFixed(2),
     salePriceCents: data.salePriceCents,
     costPriceCents: data.costPriceCents,
     entryDate: data.entryDate,
